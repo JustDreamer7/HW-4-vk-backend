@@ -25,7 +25,7 @@ def tender_create(request):
         return HttpResponse(status=405)
     company = request.GET.get('company')
     law = request.GET.get('law')
-    price = request.POST.get('price')
+    price = request.GET.get('price')
     if None in (company, law, price):
         return HttpResponse(status=400)
     else:
