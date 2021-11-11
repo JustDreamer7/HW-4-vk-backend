@@ -2,7 +2,6 @@ from django.shortcuts import render
 from django.http.response import JsonResponse, HttpResponse
 from random import randint, choice
 
-
 def index(request):
     name = request.GET.get('name')
     if name is None:
