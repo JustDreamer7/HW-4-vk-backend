@@ -17,3 +17,7 @@ class Tenders(models.Model):
     application_deadline = models.DateField(verbose_name='Срок подачи заявок', null=True)
     # tender_creator = models.ForeignKey(Users, to_field='username', on_delete=models.PROTECT)
     company = models.ForeignKey(Users, on_delete=models.PROTECT)
+
+    class Meta:
+        verbose_name = 'Тендер'
+        verbose_name_plural = 'Тендеры'
