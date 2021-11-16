@@ -5,6 +5,7 @@ from tenders.models import Tenders
 
 class TenderAdmin(admin.ModelAdmin):
     list_filter = ('law',)
+    ordering = ('price',)
 
 
 # почему-то вылетает из-за ввода

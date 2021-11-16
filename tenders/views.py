@@ -1,37 +1,71 @@
-from django.shortcuts import render
 from django.http.response import JsonResponse, HttpResponse
-from random import randint, choice
+from django.shortcuts import render
+from django.views.decorators.http import require_GET, require_POST
+
+from tenders.models import Tenders
+from users.models import User
+
 
 def index(request):
-    name = request.GET.get('name')
+    name = request.POST.get('name')
     if name is None:
         name = 'Unknown'
     ctx = {'name': name}
     return render(request, 'index.html', ctx)
 
 
-def tender_detail(request):
-    if request.method != 'GET':
-        return HttpResponse(status=405)
-    company = request.GET.get('company')
-    if company is None:
-        return JsonResponse({'Company': 'None'})
-    return JsonResponse({company: {'law': choice(['44-FZ', '223-FZ', '94-FZ']), 'price': randint(int(1e5), int(1e9))}})
+@require_GET
+def get_tender_list(request):
+    tenders = Tenders.objects.all()
+    data = [
+        {
+            'id': tender.id,
+            'title': tender.title,
+            'law': tender.law,
+            'price': tender.price
+        } for tender in tenders
+    ]
+    return JsonResponse({'tenders': data})
 
 
+@require_POST
 def tender_create(request):
-    if request.method != 'POST':
-        return HttpResponse(status=405)
-    company = request.GET.get('company')
-    law = request.GET.get('law')
-    price = request.GET.get('price')
-    if None in (company, law, price):
+    title = request.POST.get('title')
+    law = request.POST.get('law')
+    price = request.POST.get('price')
+    id = request.POST.get('id')
+    email = User.objects.get(id=id).email
+    Tenders.objects.create(title=title, law=law, price=price, user=User.objects.get(id=id))
+    if None in (title, law, price):
         return HttpResponse(status=400)
     else:
-        return JsonResponse({company: {'law': law, 'price': price}})
+        return JsonResponse({title: {'law': law, 'price': price, 'email': email}})
 
 
-def tender_list(request):
-    if request.method != 'GET':
-        return HttpResponse(status=405)
-    return JsonResponse({'PIK': {'law': '44-FZ', 'price': 1242525}, 'MOSAGRO': {'law': '223-FZ', 'price': 424523}})
+@require_POST
+def tender_update(request):
+    id = request.POST.get('id')
+    upd_data = Tenders.objects.filter(id=id).update(title='test')
+    return JsonResponse({'upd_data': upd_data})
+# Переделать, чтобы апдейтить параметры можно только по выбору
+
+@require_GET
+def tender_detail_info(request):
+    id = request.GET.get('id')
+    detail_info = Tenders.objects.get(id=id)
+    data = {
+        'id': detail_info.id,
+        'title': detail_info.title,
+        'law': detail_info.law,
+        'price': detail_info.price,
+        'appication_deadline': detail_info.application_deadline,
+        'user_id': detail_info.user_id
+    }
+    return JsonResponse({'detail_info': data})
+
+
+@require_POST
+def tender_delete(request):
+    id = request.POST.get('id')
+    Tenders.objects.filter(id=id).delete()
+    return JsonResponse({'remove_data': id})

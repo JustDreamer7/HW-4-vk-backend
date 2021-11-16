@@ -1,6 +1,12 @@
 from django.contrib import admin
 
-from tenders.models import Users
+from users.models import User
+
+
+class UserAdmin(admin.ModelAdmin):
+    list_filter = ('is_superuser',)
+    search_fields = ('company',)
+
 
 # Register your models here.
-admin.site.register(Users)
+admin.site.register(User, UserAdmin)

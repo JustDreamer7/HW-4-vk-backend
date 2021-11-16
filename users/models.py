@@ -1,10 +1,17 @@
-from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.db import models
+
 
 # Create your models here.
-class Users(models.Model):
-    username = models.EmailField(verbose_name='Имя пользователя', null=False, primary_key=True, default='Ivan@mail.ru')
+class User(AbstractUser):
+    username = models.CharField(verbose_name='Имя пользователя', max_length=50, blank=True, unique=True)
+    email = models.EmailField(verbose_name='Почта пользователя', null=False, blank=True, unique=True)
     company = models.CharField(verbose_name='Компания пользователя', max_length=64, null=True)
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ['username', 'company']
+
+    def __str__(self):
+        return "{}".format(self.email)
 
     class Meta:
         verbose_name = 'Пользователь'
