@@ -16,11 +16,20 @@ Including another URLconf
 
 from django.contrib import admin
 from django.urls import path, include
-from tenders.views import index
+from rest_framework.routers import DefaultRouter
 
+from tenders.views import index, TenderViewSet
+from users.views import UserViewSet
+
+router = DefaultRouter()
+router.register(r'api/tenders', TenderViewSet, basename='tenders')
+router.register(r'api/users', UserViewSet, basename='users')
+# router.register(r'api/test', AddTenderViewSet, basename='test')
 urlpatterns = [
     path('', index, name='index'),
     path('admin/', admin.site.urls),
     path('tenders/', include('tenders.urls')),
     path('users/', include('users.urls')),
 ]
+
+urlpatterns += router.urls
