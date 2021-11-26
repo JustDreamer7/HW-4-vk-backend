@@ -4,6 +4,7 @@ from django.views.decorators.http import require_GET, require_POST
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 
+from application.decorators import login_required, test_decorate
 from tenders.models import Tenders
 from tenders.serializers import TenderSerializer
 from users.models import User
@@ -13,16 +14,19 @@ class TenderViewSet(viewsets.ModelViewSet):
     serializer_class = TenderSerializer
     queryset = Tenders.objects.all()
 
+    @test_decorate
     def list(self, request, *args, **kwargs):
         instance = self.get_queryset()
         serializer = self.get_serializer(instance, many=True)
         return Response(serializer.data)
 
+    @test_decorate
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
         serializer = self.get_serializer(instance)
         return Response(serializer.data)
 
+    @test_decorate
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -30,9 +34,11 @@ class TenderViewSet(viewsets.ModelViewSet):
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
+    @test_decorate
     def perform_create(self, serializer):
         serializer.save()
 
+    @test_decorate
     def update(self, request, *args, **kwargs):
         partial = True
         instance = self.get_object()
@@ -42,9 +48,11 @@ class TenderViewSet(viewsets.ModelViewSet):
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
+    @test_decorate
     def perform_update(self, serializer):
         serializer.save()
 
+    @test_decorate
     def destroy(self, request, *args, **kwargs):
         try:
             instance = self.get_object()
@@ -53,10 +61,12 @@ class TenderViewSet(viewsets.ModelViewSet):
             pass
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+    @test_decorate
     def perform_destroy(self, instance):
         instance.delete()
 
 
+@login_required
 def index(request):
     name = request.POST.get('name')
     if name is None:
@@ -66,20 +76,23 @@ def index(request):
 
 
 @require_GET
-def get_tender_list(request):
-    tenders = Tenders.objects.all()
+@login_required
+def tender_list(request):
+    tenders = Tenders.objects.filter(user=User.objects.get(email=request.user))
+    print(User.objects.filter(email=request.user).first())
     data = [
         {
             'id': tender.id,
             'title': tender.title,
             'law': tender.law,
-            'price': tender.price
+            'price': tender.price,
         } for tender in tenders
     ]
     return JsonResponse({'tenders': data})
 
 
 @require_POST
+@login_required
 def tender_create(request):
     title = request.POST.get('title')
     law = request.POST.get('law')
@@ -93,6 +106,7 @@ def tender_create(request):
         return JsonResponse({title: {'law': law, 'price': price, 'email': email}})
 
 
+@login_required
 @require_POST
 def tender_update(request):
     id = request.POST.get('id')
@@ -111,7 +125,7 @@ def tender_update(request):
 
 
 # Переделать, чтобы апдейтить параметры можно только по выбору
-
+@login_required
 @require_GET
 def tender_detail_info(request):
     id = request.GET.get('id')
@@ -127,6 +141,7 @@ def tender_detail_info(request):
     return JsonResponse({'detail_info': data})
 
 
+@login_required
 @require_POST
 def tender_delete(request):
     id = request.POST.get('id')

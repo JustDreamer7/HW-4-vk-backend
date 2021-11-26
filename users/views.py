@@ -1,26 +1,31 @@
 from django.http.response import JsonResponse, HttpResponse, Http404
+from django.shortcuts import render
 from django.views.decorators.http import require_POST, require_GET
 from rest_framework import viewsets, status
 from rest_framework.response import Response
-
+from application.decorators import login_required, test_decorate
 from users.models import User
 from users.serializers import UserSerializer
+
 
 
 class UserViewSet(viewsets.ModelViewSet):
     serializer_class = UserSerializer
     queryset = User.objects.all()
 
+    @test_decorate
     def list(self, request, *args, **kwargs):
         instance = self.get_queryset()
         serializer = self.get_serializer(instance, many=True)
         return Response(serializer.data)
 
+    @test_decorate
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
         serializer = self.get_serializer(instance)
         return Response(serializer.data)
 
+    @test_decorate
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -28,9 +33,11 @@ class UserViewSet(viewsets.ModelViewSet):
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
+    @test_decorate
     def perform_create(self, serializer):
         serializer.save()
 
+    @test_decorate
     def update(self, request, *args, **kwargs):
         partial = True
         instance = self.get_object()
@@ -40,9 +47,11 @@ class UserViewSet(viewsets.ModelViewSet):
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
+    @test_decorate
     def perform_update(self, serializer):
         serializer.save()
 
+    @test_decorate
     def destroy(self, request, *args, **kwargs):
         try:
             instance = self.get_object()
@@ -51,14 +60,24 @@ class UserViewSet(viewsets.ModelViewSet):
             pass
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+    @test_decorate
     def perform_destroy(self, instance):
         instance.delete()
 
 
-# Create your views here.
+def login(request):
+    return render(request, 'login.html')
+
+
+@login_required
+def home(request):
+    return render(request, 'home.html')
+
+
 @require_GET
+@login_required
 def get_user_list(request):
-    users = User.objects.all()
+    users = User.objects.filter(email=request.user)
     data = [
         {
             'id': user.id,
@@ -71,6 +90,7 @@ def get_user_list(request):
 
 
 @require_POST
+@login_required
 def user_create(request):
     username = request.POST.get('username')
     email = request.POST.get('email')
@@ -83,6 +103,7 @@ def user_create(request):
 
 
 @require_GET
+@login_required
 def user_detail_info(request):
     id = request.GET.get('id')
     detail_info = User.objects.get(id=id)
@@ -97,13 +118,25 @@ def user_detail_info(request):
 
 
 @require_POST
+@login_required
 def user_update(request):
     id = request.POST.get('id')
-    upd_data = User.objects.filter(id=id).update(title='test')
+    username = request.POST.get('username')
+    email = request.POST.get('email')
+    company = request.POST.get('company ')
+    updated_data = {}
+    if username is not None:
+        updated_data['username'] = username
+    if email is not None:
+        updated_data['email'] = email
+    if company is not None:
+        updated_data['company'] = company
+    upd_data = User.objects.filter(id=id).update(**updated_data)
     return JsonResponse({'upd_data': upd_data})
 
 
 @require_POST
+@login_required
 def user_delete(request):
     id = request.POST.get('id')
     remove_data = User.objects.filter(id=id).delete()

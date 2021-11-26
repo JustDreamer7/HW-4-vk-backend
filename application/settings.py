@@ -27,7 +27,32 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-# Application definition
+AUTH_USER_MODEL = 'users.User'
+
+SOCIAL_AUTH_VK_OAUTH2_SCOPE = ['email']
+# SOCIAL_AUTH_VK_OAUTH2_PROFILE_EXTRA_PARAMS = {
+#     'locale': 'ru-RU',
+#     'fields': 'id, username, email, company'
+# }
+AUTHENTICATION_BACKENDS = [
+    'social_core.backends.vk.VKOAuth2',
+    'social_core.backends.github.GithubOAuth2',
+    'django.contrib.auth.backends.ModelBackend',
+]
+
+SOCIAL_AUTH_VK_OAUTH2_KEY = '8008649'
+SOCIAL_AUTH_VK_OAUTH2_SECRET = '7hf53sIq0wkqjc3VCL9T'
+
+
+SOCIAL_AUTH_GITHUB_KEY = '2ae2079b65c4d6ac4930'
+SOCIAL_AUTH_GITHUB_SECRET = '63ffb911773627eecacca97c258b73745bac3dca'
+SOCIAL_AUTH_GITHUB_SCOPE = ['email']
+
+LOGIN_URL = 'login'
+LOGIN_REDIRECT_URL = 'home'
+LOGOUT_URL = 'logout'
+LOGOUT_REDIRECT_URL = 'login'
+
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -37,7 +62,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+
     'social_django',
+    # 'sslserver',
     'tenders',
     'users',
 ]
@@ -66,6 +93,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'social_django.context_processors.backends',
+                'social_django.context_processors.login_redirect',
             ],
         },
     },
@@ -79,6 +108,9 @@ WSGI_APPLICATION = 'application.wsgi.application'
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
+
+#
+
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -117,14 +149,12 @@ STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static'),
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
-AUTHENTICATION_BACKENDS = [
-    'social_core.backends.linkedin.LinkedinOAuth2',
-    'social_core.backends.instagram.InstagramOAuth2',
-    'social_core.backends.facebook.FacebookOAuth2',
-    'django.contrib.auth.backends.ModelBackend',
-]
+
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-AUTH_USER_MODEL = 'users.User'
+
+SOCIAL_AUTH_JSONFIELD_ENABLED = True
+
+
 try:
     from .local_settings import *
 except ImportError:
