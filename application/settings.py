@@ -20,7 +20,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-d+-5^)p=99s16%j&j*i8p5g!k++2j@s*6@3=w-q$#g)9u2f8-r'
+
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -40,13 +40,7 @@ AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
 ]
 
-SOCIAL_AUTH_VK_OAUTH2_KEY = '8008649'
-SOCIAL_AUTH_VK_OAUTH2_SECRET = '7hf53sIq0wkqjc3VCL9T'
 
-
-SOCIAL_AUTH_GITHUB_KEY = '2ae2079b65c4d6ac4930'
-SOCIAL_AUTH_GITHUB_SECRET = '63ffb911773627eecacca97c258b73745bac3dca'
-SOCIAL_AUTH_GITHUB_SCOPE = ['email']
 
 LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'home'
