@@ -3,7 +3,7 @@ from django.shortcuts import render
 from django.views.decorators.http import require_POST, require_GET
 from rest_framework import viewsets, status
 from rest_framework.response import Response
-from application.decorators import login_required, test_decorate
+from application.decorators import login_required, login_required_for_methods
 from users.models import User
 from users.serializers import UserSerializer
 
@@ -13,19 +13,19 @@ class UserViewSet(viewsets.ModelViewSet):
     serializer_class = UserSerializer
     queryset = User.objects.all()
 
-    @test_decorate
+    @login_required_for_methods
     def list(self, request, *args, **kwargs):
         instance = self.get_queryset()
         serializer = self.get_serializer(instance, many=True)
         return Response(serializer.data)
 
-    @test_decorate
+    @login_required_for_methods
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
         serializer = self.get_serializer(instance)
         return Response(serializer.data)
 
-    @test_decorate
+    # @login_required_for_methods
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -33,11 +33,11 @@ class UserViewSet(viewsets.ModelViewSet):
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
-    @test_decorate
+    # @login_required_for_methods
     def perform_create(self, serializer):
         serializer.save()
 
-    @test_decorate
+    # @login_required_for_methods
     def update(self, request, *args, **kwargs):
         partial = True
         instance = self.get_object()
@@ -47,11 +47,11 @@ class UserViewSet(viewsets.ModelViewSet):
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
-    @test_decorate
+    # @login_required_for_methods
     def perform_update(self, serializer):
         serializer.save()
 
-    @test_decorate
+    @login_required_for_methods
     def destroy(self, request, *args, **kwargs):
         try:
             instance = self.get_object()
@@ -60,7 +60,7 @@ class UserViewSet(viewsets.ModelViewSet):
             pass
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-    @test_decorate
+    @login_required_for_methods
     def perform_destroy(self, instance):
         instance.delete()
 

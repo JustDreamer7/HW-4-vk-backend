@@ -1,6 +1,9 @@
 from django.db import models
+from django.db.models.signals import post_save,pre_save
+from django.dispatch import receiver
 from django.urls import reverse
 
+from tenders.tasks import admin_informer
 from users.models import User
 
 
@@ -28,3 +31,8 @@ class Tenders(models.Model):
     class Meta:
         verbose_name = 'Тендер'
         verbose_name_plural = 'Тендеры'
+
+
+@receiver(pre_save, sender=Tenders)
+def send_info_mail(sender, **kwargs):
+    admin_informer.delay()
