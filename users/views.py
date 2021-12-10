@@ -1,13 +1,23 @@
 from django.http.response import JsonResponse, HttpResponse, Http404
 from django.shortcuts import render
 from django.views.decorators.http import require_POST, require_GET
+from elasticsearch import Elasticsearch, RequestsHttpConnection
 from rest_framework import viewsets, status
 from rest_framework.response import Response
+from rest_framework_elasticsearch import es_views, es_filters, es_pagination
 from application.decorators import login_required, login_required_for_methods
 from users.models import User
-from users.serializers import UserSerializer
-
-
+from users.serializers import UserSerializer, ElasticUserSerializer
+from users.documents import UserDocument
+from django_elasticsearch_dsl_drf.filter_backends import (
+    FilteringFilterBackend,
+    CompoundSearchFilterBackend
+)
+from django_elasticsearch_dsl_drf.viewsets import DocumentViewSet
+from django_elasticsearch_dsl_drf.filter_backends import (
+    FilteringFilterBackend,
+    OrderingFilterBackend,
+)
 
 class UserViewSet(viewsets.ModelViewSet):
     serializer_class = UserSerializer
@@ -63,6 +73,59 @@ class UserViewSet(viewsets.ModelViewSet):
     @login_required_for_methods
     def perform_destroy(self, instance):
         instance.delete()
+
+
+class UserView(DocumentViewSet):
+    document = UserDocument
+    serializer_class = ElasticUserSerializer
+    # lookup_field = 'first_name'
+    fielddata = True
+    filter_backends = [
+        FilteringFilterBackend,
+        OrderingFilterBackend,
+        CompoundSearchFilterBackend,
+    ]
+    search_fields = (
+        'username',
+        'email'
+        'company',
+    )
+    multi_match_search_fields = (
+        'title',
+        'email'
+        'content',
+    )
+    filter_fields = {
+        'username': 'username',
+        'company': 'company',
+    }
+    ordering_fields = {
+        'id': None,
+    }
+    ordering = ('id',)
+    # es_client = Elasticsearch(hosts=['localhost:9200/'],
+    #                           connection_class=RequestsHttpConnection)
+    # es_model = UserDocument
+    # es_pagination_class = es_pagination.ElasticLimitOffsetPagination
+    # es_filter_backends = (
+    #     es_filters.ElasticFieldsFilter,
+    #     es_filters.ElasticFieldsRangeFilter,
+    #     es_filters.ElasticSearchFilter,
+    #     es_filters.ElasticOrderingFilter,
+    #     es_filters.ElasticGeoBoundingBoxFilter
+    # )
+    # # es_ordering = 'application_deadline'
+    # es_filter_fields = (
+    #     es_filters.ESFieldFilter('company'),
+    # )
+    # # es_range_filter_fields = (es_filters.ESFieldFilter('price'),)
+    # es_search_fields = (
+    #     'company',
+    #     'username',
+    # )
+
+
+
 
 
 def login(request):

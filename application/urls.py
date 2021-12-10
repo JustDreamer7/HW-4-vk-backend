@@ -19,12 +19,13 @@ from django.contrib.auth import views as auth_views
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 
-from tenders.views import TenderViewSet, index
+from tenders.views import TenderViewSet, index, TenderView
 from users.views import UserViewSet, login, home
 
 router = DefaultRouter()
 router.register(r'api/tenders', TenderViewSet, basename='tenders')
 router.register(r'api/users', UserViewSet, basename='users')
+# router.register(r'api/tendersearch', TenderView, basename='tendersearch')
 # router.register(r'api/test', AddTenderViewSet, basename='test')
 urlpatterns = [
     path('', home, name='home'),

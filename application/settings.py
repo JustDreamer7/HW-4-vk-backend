@@ -54,7 +54,7 @@ CELERY_RESULT_BACKEND = 'django-db'
 CELERY_BEAT_SCHEDULE = {
     'user_checking': {
         'task': 'users.tasks.count_users',
-        'schedule': 300,
+        'schedule': 2,
     },
 }
 INSTALLED_APPS = [
@@ -67,7 +67,8 @@ INSTALLED_APPS = [
     'django_celery_results',
     'celery',
     'rest_framework',
-
+    'django_elasticsearch_dsl',
+    'django_elasticsearch_dsl_drf',
     'social_django',
     # 'sslserver',
     'tenders',
@@ -104,6 +105,13 @@ TEMPLATES = [
         },
     },
 ]
+
+ELASTICSEARCH_DSL = {
+    'default': {
+        'hosts': 'localhost:9200',
+    },
+}
+
 
 WSGI_APPLICATION = 'application.wsgi.application'
 

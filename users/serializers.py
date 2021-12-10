@@ -1,6 +1,10 @@
+from django_elasticsearch_dsl_drf.serializers import DocumentSerializer
 from rest_framework import serializers
 
+from users.documents import UserDocument
 from users.models import User
+
+
 # from django.contrib.auth.models import User
 
 
@@ -19,3 +23,10 @@ class UserSerializer(serializers.ModelSerializer):
         instance.is_superuser = validated_data['is_superuser']
         instance.save()
         return instance
+
+
+class ElasticUserSerializer(DocumentSerializer):
+    class Meta:
+        model = User
+        document = UserDocument
+        fields = ['id', 'username', 'email', 'company']
