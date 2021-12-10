@@ -29,4 +29,4 @@ class ElasticUserSerializer(DocumentSerializer):
     class Meta:
         model = User
         document = UserDocument
-        fields = ['id', 'username', 'email', 'company']
+        fields = ['id', 'username', 'email', 'company', 'is_superuser']

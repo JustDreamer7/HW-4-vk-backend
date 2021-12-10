@@ -26,6 +26,7 @@ class TendersDocument(Document):
         model = Tenders
 
         fields = [
+            'id',
             'title',
             'law',
             'price',

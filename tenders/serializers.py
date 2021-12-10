@@ -13,11 +13,10 @@ class TenderSerializer(serializers.ModelSerializer):
         model = Tenders
         fields = ['id', 'title', 'law', 'price', 'application_deadline', 'user']
 
-    # def validate(self, data):
-    #     for key in ('title'):
-    #         if 'tender' in data[key].lower():
-    #             raise serializers.ValidationError(f'{key} field contains tender, I dont like it')
-    #     return data
+    def validate(self, data):
+        if 'tender' in data['title'].lower():
+            raise serializers.ValidationError(f'title field contains tender, I dont like it')
+        return data
 
     def create(self, validated_data):
         test = validated_data.get("user", None)
@@ -40,4 +39,4 @@ class ElasticTenderSerializer(DocumentSerializer):
     class Meta:
         model = Tenders
         document = TendersDocument
-        fields = ['id', 'title', 'law', 'price','application_deadline', 'user']
+        fields = ['id', 'title', 'law', 'price', 'application_deadline', 'user']

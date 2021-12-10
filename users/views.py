@@ -89,40 +89,22 @@ class UserView(DocumentViewSet):
         'username',
         'email'
         'company',
+
     )
-    multi_match_search_fields = (
-        'title',
-        'email'
-        'content',
-    )
+    # multi_match_search_fields = (
+    #     'username',
+    #     'email'
+    #     'company',
+    # )
     filter_fields = {
         'username': 'username',
         'company': 'company',
+        'is_superuser': 'is_superuser',
     }
     ordering_fields = {
-        'id': None,
+        'id': 'id',
     }
     ordering = ('id',)
-    # es_client = Elasticsearch(hosts=['localhost:9200/'],
-    #                           connection_class=RequestsHttpConnection)
-    # es_model = UserDocument
-    # es_pagination_class = es_pagination.ElasticLimitOffsetPagination
-    # es_filter_backends = (
-    #     es_filters.ElasticFieldsFilter,
-    #     es_filters.ElasticFieldsRangeFilter,
-    #     es_filters.ElasticSearchFilter,
-    #     es_filters.ElasticOrderingFilter,
-    #     es_filters.ElasticGeoBoundingBoxFilter
-    # )
-    # # es_ordering = 'application_deadline'
-    # es_filter_fields = (
-    #     es_filters.ESFieldFilter('company'),
-    # )
-    # # es_range_filter_fields = (es_filters.ESFieldFilter('price'),)
-    # es_search_fields = (
-    #     'company',
-    #     'username',
-    # )
 
 
 

@@ -88,47 +88,28 @@ class TenderView(DocumentViewSet):
         CompoundSearchFilterBackend,
     ]
     search_fields = (
-        'username',
-        'email'
-        'company',
-    )
-    multi_match_search_fields = (
         'title',
-        'email'
-        'content',
+        'law',
+        'price',
+        # 'application_deadline'
+        # 'user',
     )
+    # multi_match_search_fields = (
+    #     'title',
+    #     'law',
+    #     'price',
+    #     'application_deadline'
+    #     'user',
+    # )
     filter_fields = {
-        'username': 'username',
-        'company': 'company',
+        'title': 'title',
+        'law': 'law',
     }
     ordering_fields = {
-        'id': None,
+        'id': 'id',
     }
     ordering = ('id',)
-    # es_client = Elasticsearch(hosts=['localhost:9200/'],
-    #                           connection_class=RequestsHttpConnection)
-    # es_model = TendersDocument
-    # es_pagination_class = es_pagination.ElasticLimitOffsetPagination
-    # es_filter_backends = (
-    #     es_filters.ElasticFieldsFilter,
-    #     es_filters.ElasticFieldsRangeFilter,
-    #     es_filters.ElasticSearchFilter,
-    #     es_filters.ElasticOrderingFilter,
-    #     es_filters.ElasticGeoBoundingBoxFilter
-    # )
-    # # es_ordering = 'application_deadline'
-    # es_filter_fields = (
-    #     es_filters.ESFieldFilter('law', 'laws'),
-    # )
-    # es_range_filter_fields = (es_filters.ESFieldFilter('price'),)
-    # es_search_fields = (
-    #     'law',
-    #     'title',
-    # )
 
-    # @classmethod
-    # def get_extra_actions(cls):
-    #     return []
 
 
 @login_required
